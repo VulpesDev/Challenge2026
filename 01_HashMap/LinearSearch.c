@@ -1,12 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-
-/* basically a string-int pair */
-typedef struct {
-	char* key;
-	int value;
-} item;
+#include "Header.h"
 
 /* A regukar linear search iterating an array */
 item*	linear_search(item* items, size_t size, const char* key) {
