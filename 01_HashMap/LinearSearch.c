@@ -5,61 +5,54 @@
 
 /* A regukar linear search iterating an array */
 item*	linear_search(item* items, size_t size, const char* key) {
+  if (size <= 0 || !items || !key) {
+		return (NULL);
+	}
+
 	for (size_t i=0; i<size; i++) {
 		if (strcmp(items[i].key, key) == 0) {
 			return &items[i];
 		}
 	}
-	return NULL;
+	return (NULL);
 }
 
 /* Assign keyToSearch from stdin  */
-int	handle_input(int argc, char** argv, char** keyToSearch) {
+char*	extract_key_from_input(const int argc, char** argv) {
+  char* result;
+
+  result = NULL;
 	if (argc != 2) {
 		printf("Usage: './a.out <key_to_search>'\n");
-		return (1);
+		return (NULL);
 	}
 
-	*keyToSearch = argv[1];
-	return (0);
-}
-
-/* Handles invalid arguments and calls linear_search*/
-int handle_search(item* items, size_t size, char* key) {
-	item*	foundItem;
-
-	if (size <= 0 || !items || !key) {
-		printf("Invalid Input!");
-		return (1);
-	}
-
-	foundItem = linear_search(items, size, key);
-	if (!foundItem) {
-		printf("key '%s' doesn't exist\n", key);
-		return (1);
-	}
-	printf("linear_search: value of '%s' is %d\n", key, foundItem->value);
-	return (0);
+	result = argv[1];
+	return (result);
 }
 
 /* In the current style I tried keeping all methods modular and minimalistic.
 My approach assumes readability relies onsplitting sections into many small parts */
 int main ( int argc, char** argv ) {
-	
+  const item* found;
 	char*	keyToSearch;
-	size_t	numItems;
 
-	item items[] = {
-		{"foo", 10}, {"bar", 42}, {"bazz", 36}, {"buzz", 7},
+  item items[] = {
+		      {"foo", 10}, {"bar", 42}, {"bazz", 36}, {"buzz", 7},
         	{"bob", 11}, {"jane", 100}, {"x", 200}
 	};
-	numItems = sizeof(items) / sizeof(item);
+	const size_t numItems = sizeof(items) / sizeof(item);
 
-	if (handle_input(argc, argv, &keyToSearch)) {
-		return (1);
+  keyToSearch = extract_key_from_input(argc, argv);
+	if (keyToSearch == NULL) {
+		return log_error(ERR_KEY_MISSING, "Error: Couldn'j find key %s\n", keyToSearch);
 	}
-	if (handle_search(items, numItems, keyToSearch)) {
-		return (1);
-	}
+
+  found = linear_search(items, numItems, keyToSearch);
+	if (found == NULL){
+		return log_error(ERR_KEY_MISSING, "Error: Couldn't find key %s\n", keyToSearch);
+	} else {
+    printf("Key Found: %s, Value: %d\n", found->key, found->value);
+  }
 	return (0);
 }
